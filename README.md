@@ -1,6 +1,7 @@
 # Everyday Unpacked – Animations-Pipeline
 
-Folge 01: **Why airplane windows have a tiny hole** (Englisch, 9:16, 1080 × 1920, 30 fps, ≈ 82 s)
+Folge 01: **Why airplane windows have a tiny hole** (Englisch, 9:16, 1080 × 1920, 30 fps)
+Aktueller Stand: `final.mp4` mit ElevenLabs-Voiceover (66,4 s Stimme → 69,1 s Video), −14 LUFS.
 
 ## Ordner
 | Pfad | Inhalt |
@@ -16,6 +17,7 @@ Folge 01: **Why airplane windows have a tiny hole** (Englisch, 9:16, 1080 × 192
 
 ## Voraussetzungen
 Python 3.10+, `pip install pillow numpy`, ffmpeg/ffprobe im PATH.
+Empfohlen für Voiceover-Folgen: `pip install pocketsphinx` (Wort-genaue Ausrichtung, läuft offline, Modell ist im Paket).
 
 ## Neu rendern
 ```bash
@@ -26,12 +28,16 @@ Optional: `--workers 8` (Parallelität), `--still 12.5 40` (nur Standbilder nach
 ## Mit ElevenLabs-Voiceover
 1. Text aus `output/voiceover.txt` in ElevenLabs vertonen, als `input/voiceover.mp3` speichern.
 2. `python3 project/render.py` erneut ausführen.
-   - Dauer und Sprechpausen der Datei werden gemessen (ffmpeg `silencedetect`); Szenenwechsel, Animationen,
-     Soundeffekte und Untertitel folgen automatisch den Satzgrenzen. Das Tempo der Stimme wird nicht verändert.
-   - Ergebnis: `animation_preview.mp4` (ohne Stimme, neues Timing) und `final.mp4` (Stimme + Soundeffekte).
+   - Mit `pocketsphinx` wird das Skript Wort für Wort an die Aufnahme ausgerichtet (exakte Untertitel/Szenenwechsel).
+     Ohne das Paket – oder wenn ein Wort unbekannt ist – werden die Sprechpausen (ffmpeg `silencedetect`) den
+     Cue-Grenzen zugeordnet. Unbekannte Wörter in `PRONUNCIATIONS` (episode.py) eintragen.
+   - Das Tempo der Stimme wird nie verändert. Animationen und Soundeffekte folgen automatisch den Cues.
+   - Ergebnis: `animation_preview.mp4` (ohne Stimme, echtes Timing) und `final.mp4` (Stimme + Soundeffekte,
+     auf ca. −14 LUFS / −1,5 dBTP gebracht).
    - Ist die Datei kürzer als 60 s, wird **kein** `final.mp4` erzeugt; das Skript meldet, dass der Text länger sein muss.
-3. Kontrolle: `output/timeline.json` zeigt `matched_pauses` (gefundene Satzpausen). Liegen Untertitel daneben,
-   in `project/timeline.py` `detect_silences(noise_db=…, min_dur=…)` anpassen.
+   - Videolänge = Voiceover + 0,35 s Vorlauf + 2,4 s Endkarte. Für 75–85 s braucht die Stimme 72–82 s
+     (bei diesem Sprecher ≈ 3 Wörter/s → ca. 215–240 Wörter).
+3. Kontrolle: `output/timeline.json` zeigt `alignment` (verwendete Methode) und alle Cue-Zeiten.
 
 ## Text ändern
 In `project/episode.py` die `CUES` anpassen (ein Cue = eine Untertitelzeile, `*Wort*` = gelb hervorgehoben).

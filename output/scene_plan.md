@@ -1,12 +1,12 @@
 # Scene Plan – Why airplane windows have a tiny hole
 
 **Format:** 1080 × 1920 (9:16), 30 fps  
-**Total length:** 82.0 s  
-**Timing:** geplantes Timing (noch kein Voiceover) – wird beim Render mit input/voiceover.mp3 automatisch angepasst
+**Total length:** 69.1 s  
+**Timing:** an input/voiceover.mp3 ausgerichtet
 
 Safe zones: key text & captions stay between y ≈ 220 px and y ≈ 1430 px and x ≈ 60–1000 px (top status/tabs and bottom description/buttons of TikTok & YouTube Shorts stay clear). Captions are centred at y = 1350 px on a dark box.
 
-## Scene 1 – Hook – the tiny hole  `0:00.0 – 0:08.0`
+## Scene 1 – Hook – the tiny hole  `0:00.0 – 0:06.3`
 
 **Voiceover:** Every airplane window has a tiny hole in it. You've probably sat right next to one and never noticed.
 
@@ -16,9 +16,9 @@ Safe zones: key text & captions stay between y ≈ 220 px and y ≈ 1430 px and 
 
 **On-screen text:** 'EVERY PLANE WINDOW HAS THIS' (visible from frame 1) -> 'NEVER NOTICED?'
 
-**Sound effects:** 0:00.0 pop, 0:00.1 sparkle, 0:00.5 cabin_chime, 0:04.0 whoosh, 0:04.5 tap, 0:06.8 pop_high, 0:07.3 whoosh_in (plus quiet cabin-hum bed throughout)
+**Sound effects:** 0:00.0 pop, 0:00.1 sparkle, 0:00.5 cabin_chime, 0:03.3 whoosh, 0:03.8 tap, 0:05.3 pop_high, 0:05.8 whoosh_in (plus quiet cabin-hum bed throughout)
 
-## Scene 2 – Not a crack, not a defect  `0:08.0 – 0:16.4`
+## Scene 2 – Not a crack, not a defect  `0:06.3 – 0:13.2`
 
 **Voiceover:** It's not a crack, and it's not a defect. It's there on purpose, and it quietly does two jobs.
 
@@ -28,9 +28,9 @@ Safe zones: key text & captions stay between y ≈ 220 px and y ≈ 1430 px and 
 
 **On-screen text:** 'CRACK?' ✗  'DEFECT?' ✗  'ON PURPOSE'  'JOB 1 ?' 'JOB 2 ?'
 
-**Sound effects:** 0:08.1 whoosh, 0:08.7 buzz, 0:10.3 buzz, 0:12.3 stamp, 0:14.2 pop, 0:14.4 pop_high (plus quiet cabin-hum bed throughout)
+**Sound effects:** 0:06.4 whoosh, 0:07.0 buzz, 0:08.0 buzz, 0:09.6 stamp, 0:11.5 pop, 0:11.7 pop_high (plus quiet cabin-hum bed throughout)
 
-## Scene 3 – Common assumption: one sheet  `0:16.4 – 0:22.4`
+## Scene 3 – Common assumption: one sheet  `0:13.2 – 0:18.1`
 
 **Voiceover:** Most people assume a plane window is one thick sheet. It's actually three.
 
@@ -40,9 +40,9 @@ Safe zones: key text & captions stay between y ≈ 220 px and y ≈ 1430 px and 
 
 **On-screen text:** 'ONE THICK SHEET?' -> '3 PANES'
 
-**Sound effects:** 0:16.4 whoosh, 0:19.1 thud, 0:20.9 split, 0:21.1 tick, 0:21.4 tick, 0:21.6 tick (plus quiet cabin-hum bed throughout)
+**Sound effects:** 0:13.2 whoosh, 0:15.5 thud, 0:17.0 split, 0:17.2 tick, 0:17.4 tick, 0:17.7 tick (plus quiet cabin-hum bed throughout)
 
-## Scene 4 – The three panes  `0:22.4 – 0:35.6`
+## Scene 4 – The three panes  `0:18.1 – 0:28.2`
 
 **Voiceover:** The pane you can touch is just a scratch shield. It holds back no pressure at all. Behind it sit two strong acrylic panes: a middle one and an outer one.
 
@@ -52,9 +52,9 @@ Safe zones: key text & captions stay between y ≈ 220 px and y ≈ 1430 px and 
 
 **On-screen text:** 'SCRATCH PANE – no pressure', 'MIDDLE', 'OUTER', 'ACRYLIC'
 
-**Sound effects:** 0:22.4 whoosh, 0:23.4 tap, 0:26.9 pop, 0:30.2 shimmer, 0:32.7 tick, 0:33.3 tick (plus quiet cabin-hum bed throughout)
+**Sound effects:** 0:18.2 whoosh, 0:19.1 tap, 0:21.3 pop, 0:23.5 shimmer, 0:26.4 tick, 0:27.1 tick (plus quiet cabin-hum bed throughout)
 
-## Scene 5 – Thin air outside, dense air inside  `0:35.6 – 0:47.4`
+## Scene 5 – Thin air outside, dense air inside  `0:28.2 – 0:38.7`
 
 **Voiceover:** At cruising altitude, the air outside is thin. The air inside is kept much denser, so it pushes outward on every window with hundreds of kilos of force.
 
@@ -64,9 +64,9 @@ Safe zones: key text & captions stay between y ≈ 220 px and y ≈ 1430 px and 
 
 **On-screen text:** '35,000 FT', 'OUTSIDE ≈ ¼ sea-level pressure', 'HUNDREDS OF KG OF FORCE'
 
-**Sound effects:** 0:35.6 rise, 0:37.0 whoosh, 0:39.6 air_hiss, 0:42.2 push, 0:45.1 thud (plus quiet cabin-hum bed throughout)
+**Sound effects:** 0:28.3 rise, 0:29.7 whoosh, 0:31.9 air_hiss, 0:34.4 push, 0:37.1 thud (plus quiet cabin-hum bed throughout)
 
-## Scene 6 – The hole's real job  `0:47.4 – 1:05.0`
+## Scene 6 – The hole's real job  `0:38.7 – 0:53.2`
 
 **Voiceover:** That tiny hole goes through the middle pane. Cabin air flows into the gap behind it, so the middle pane feels equal pressure on both sides. The outer pane carries the whole load, and the middle pane waits, unstressed, as a backup.
 
@@ -76,9 +76,9 @@ Safe zones: key text & captions stay between y ≈ 220 px and y ≈ 1430 px and 
 
 **On-screen text:** 'BREATHER HOLE', 'EQUAL PRESSURE', 'CARRIES THE LOAD', 'BACKUP'
 
-**Sound effects:** 0:47.4 whoosh_in, 0:47.9 ding, 0:51.2 air_hiss, 0:56.3 balance, 0:58.5 push, 1:03.3 shield (plus quiet cabin-hum bed throughout)
+**Sound effects:** 0:38.7 whoosh_in, 0:39.2 ding, 0:42.0 air_hiss, 0:45.8 balance, 0:47.8 push, 0:51.7 shield (plus quiet cabin-hum bed throughout)
 
-## Scene 7 – Job two: no fog  `1:05.0 – 1:12.6`
+## Scene 7 – Job two: no fog  `0:53.2 – 1:00.3`
 
 **Voiceover:** Job number two: that same airflow lets moisture escape, so the gap stays clear of fog and frost.
 
@@ -88,9 +88,9 @@ Safe zones: key text & captions stay between y ≈ 220 px and y ≈ 1430 px and 
 
 **On-screen text:** 'JOB 2', 'NO FOG · NO FROST'
 
-**Sound effects:** 1:05.0 whoosh, 1:05.4 pop, 1:06.6 air_hiss, 1:09.4 wipe, 1:10.0 ding (plus quiet cabin-hum bed throughout)
+**Sound effects:** 0:53.2 whoosh, 0:53.6 pop, 0:54.9 air_hiss, 0:57.9 wipe, 0:58.5 ding (plus quiet cabin-hum bed throughout)
 
-## Scene 8 – Payoff + question  `1:12.6 – 1:22.0`
+## Scene 8 – Payoff + question  `1:00.3 – 1:09.1`
 
 **Voiceover:** One tiny hole. A spare window and a defogger. What everyday thing should we unpack next?
 
@@ -100,7 +100,7 @@ Safe zones: key text & captions stay between y ≈ 220 px and y ≈ 1430 px and 
 
 **On-screen text:** 'SPARE WINDOW' + 'DEFOGGER', 'WHAT SHOULD WE UNPACK NEXT?'
 
-**Sound effects:** 1:12.7 whoosh, 1:14.4 pop, 1:15.3 pop_high, 1:16.9 whoosh_in, 1:18.5 outro_chime (plus quiet cabin-hum bed throughout)
+**Sound effects:** 1:00.4 whoosh, 1:02.1 pop, 1:03.0 pop_high, 1:04.3 whoosh_in, 1:05.7 outro_chime (plus quiet cabin-hum bed throughout)
 
 ## Transitions
 
@@ -110,38 +110,38 @@ Safe zones: key text & captions stay between y ≈ 220 px and y ≈ 1430 px and 
 
 | # | Start | End | Text |
 |---|---|---|---|
-| 1 | 0:00.3 | 0:03.7 | Every airplane window has a tiny hole in it. |
-| 2 | 0:04.0 | 0:06.6 | You've probably sat right next to one |
-| 3 | 0:06.7 | 0:07.8 | and never noticed. |
-| 4 | 0:08.2 | 0:09.7 | It's not a crack, |
-| 5 | 0:09.8 | 0:11.7 | and it's not a defect. |
-| 6 | 0:12.0 | 0:13.5 | It's there on purpose, |
-| 7 | 0:13.6 | 0:15.9 | and it quietly does two jobs. |
-| 8 | 0:16.6 | 0:18.8 | Most people assume a plane window |
-| 9 | 0:18.9 | 0:20.4 | is one thick sheet. |
-| 10 | 0:20.8 | 0:21.9 | It's actually three. |
-| 11 | 0:22.6 | 0:24.5 | The pane you can touch |
-| 12 | 0:24.6 | 0:26.4 | is just a scratch shield. |
-| 13 | 0:26.8 | 0:29.4 | It holds back no pressure at all. |
-| 14 | 0:29.8 | 0:32.4 | Behind it sit two strong acrylic panes: |
-| 15 | 0:32.5 | 0:35.1 | a middle one and an outer one. |
-| 16 | 0:35.8 | 0:36.9 | At cruising altitude, |
-| 17 | 0:37.0 | 0:38.9 | the air outside is thin. |
-| 18 | 0:39.3 | 0:41.8 | The air inside is kept much denser, |
-| 19 | 0:42.0 | 0:44.5 | so it pushes outward on every window |
-| 20 | 0:44.7 | 0:46.9 | with hundreds of kilos of force. |
-| 21 | 0:47.6 | 0:48.7 | That tiny hole |
-| 22 | 0:48.8 | 0:50.7 | goes through the middle pane. |
-| 23 | 0:51.1 | 0:54.0 | Cabin air flows into the gap behind it, |
-| 24 | 0:54.1 | 0:56.0 | so the middle pane feels |
-| 25 | 0:56.1 | 0:57.9 | equal pressure on both sides. |
-| 26 | 0:58.3 | 1:00.9 | The outer pane carries the whole load, |
-| 27 | 1:01.0 | 1:02.9 | and the middle pane waits, |
-| 28 | 1:03.0 | 1:04.5 | unstressed, as a backup. |
-| 29 | 1:05.2 | 1:06.3 | Job number two: |
-| 30 | 1:06.4 | 1:08.6 | that same airflow lets moisture escape, |
-| 31 | 1:08.8 | 1:12.1 | so the gap stays clear of fog and frost. |
-| 32 | 1:12.8 | 1:13.9 | One tiny hole. |
-| 33 | 1:14.3 | 1:16.5 | A spare window and a defogger. |
-| 34 | 1:16.9 | 1:18.0 | What everyday thing |
-| 35 | 1:18.1 | 1:19.6 | should we unpack next? |
+| 1 | 0:00.3 | 0:03.1 | Every airplane window has a tiny hole in it. |
+| 2 | 0:03.4 | 0:05.2 | You've probably sat right next to one |
+| 3 | 0:05.3 | 0:06.3 | and never noticed. |
+| 4 | 0:06.5 | 0:07.6 | It's not a crack, |
+| 5 | 0:07.6 | 0:09.1 | and it's not a defect. |
+| 6 | 0:09.3 | 0:10.8 | It's there on purpose, |
+| 7 | 0:10.9 | 0:13.0 | and it quietly does two jobs. |
+| 8 | 0:13.4 | 0:15.2 | Most people assume a plane window |
+| 9 | 0:15.3 | 0:16.5 | is one thick sheet. |
+| 10 | 0:16.8 | 0:18.1 | It's actually three. |
+| 11 | 0:18.4 | 0:19.5 | The pane you can touch |
+| 12 | 0:19.5 | 0:21.0 | is just a scratch shield. |
+| 13 | 0:21.2 | 0:22.9 | It holds back no pressure at all. |
+| 14 | 0:23.1 | 0:26.1 | Behind it sit two strong acrylic panes: |
+| 15 | 0:26.2 | 0:28.2 | a middle one and an outer one. |
+| 16 | 0:28.5 | 0:29.7 | At cruising altitude, |
+| 17 | 0:29.7 | 0:31.5 | the air outside is thin. |
+| 18 | 0:31.6 | 0:34.0 | The air inside is kept much denser, |
+| 19 | 0:34.2 | 0:36.7 | so it pushes outward on every window |
+| 20 | 0:36.7 | 0:38.7 | with hundreds of kilos of force. |
+| 21 | 0:38.9 | 0:40.0 | That tiny hole |
+| 22 | 0:40.0 | 0:41.6 | goes through the middle pane. |
+| 23 | 0:41.9 | 0:44.2 | Cabin air flows into the gap behind it, |
+| 24 | 0:44.3 | 0:45.5 | so the middle pane feels |
+| 25 | 0:45.5 | 0:47.4 | equal pressure on both sides. |
+| 26 | 0:47.6 | 0:49.8 | The outer pane carries the whole load, |
+| 27 | 0:49.8 | 0:51.2 | and the middle pane waits, |
+| 28 | 0:51.4 | 0:53.0 | unstressed, as a backup. |
+| 29 | 0:53.4 | 0:54.4 | Job number two: |
+| 30 | 0:54.7 | 0:57.2 | that same airflow lets moisture escape, |
+| 31 | 0:57.3 | 1:00.2 | so the gap stays clear of fog and frost. |
+| 32 | 1:00.5 | 1:01.8 | One tiny hole. |
+| 33 | 1:02.0 | 1:04.0 | A spare window and a defogger. |
+| 34 | 1:04.3 | 1:05.3 | What everyday thing |
+| 35 | 1:05.3 | 1:06.7 | should we unpack next? |

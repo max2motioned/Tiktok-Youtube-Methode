@@ -1,15 +1,16 @@
 """Timing: geplantes Timing (ohne Voiceover) oder Ausrichtung an input/voiceover.mp3.
 
 Ohne Voiceover: Sprechdauer aus Wortzahl, Ziel-Gesamtlänge TARGET_TOTAL.
-Mit Voiceover:  Dauer + Pausen (ffmpeg silencedetect) der echten Datei. Satzgrenzen werden auf
-                die nächstgelegene Sprechpause gelegt, Cues innerhalb eines Satzes nach Wortzahl verteilt.
+Mit Voiceover:  1. Wort-genaue Ausrichtung des Skripts an die Aufnahme (pocketsphinx, offline, optional).
+                2. Rückfall: Sprechpausen (ffmpeg silencedetect) per dynamischer Programmierung den
+                   Cue-Grenzen zuordnen, Cues dazwischen nach Wortzahl verteilen.
                 Die Sprechgeschwindigkeit wird NIE verändert.
 """
 import json
 import re
 import subprocess
 
-from episode import CUES
+from episode import CUES, PRONUNCIATIONS
 
 LEAD_IN = 0.35         # Sekunden vor dem ersten Wort (Pop auf dem ersten Bild)
 TAIL = 2.4             # Endkarte nach dem letzten Wort
@@ -57,6 +58,100 @@ def detect_silences(path, noise_db=-35, min_dur=0.18):
     return list(zip(starts, ends))
 
 
+SKIP_BOUNDARY = {"c": 0.6, "s": 3.0, "p": 4.0}  # Kosten, wenn eine Cue-Grenze keine Pause bekommt
+SKIP_PAUSE = 1.0                                  # Kosten für eine Pause mitten in einem Cue
+
+
+def match_pauses(inner, speech_start, speech_end):
+    """Ordnet erkannte Sprechpausen den Cue-Grenzen zu (dynamische Programmierung).
+
+    Bewertet jeden Abschnitt zwischen zwei Ankern danach, wie gut seine Dauer zum Wortanteil passt
+    (gleichmäßiges Sprechtempo), plus Strafkosten für übersprungene Grenzen/Pausen.
+    Rückgabe: {cue_index: (pause_start, pause_end)} = Ende von Cue i / Start von Cue i+1.
+    """
+    M = len(CUES) - 1                        # Grenzen zwischen Cues
+    wcum = [0]
+    for _, t, _ in CUES:
+        wcum.append(wcum[-1] + words(t))
+    wcum[M + 1] = wcum[-1]
+    rate = (speech_end - speech_start) / wcum[-1]
+    P = [(speech_start, speech_start)] + list(inner) + [(speech_end, speech_end)]
+    N = len(inner)
+    mid = [(a + b) / 2 for a, b in P]
+    skipb = [0.0] + [SKIP_BOUNDARY[CUES[k][2]] for k in range(M)] + [0.0]
+    skipb_cum = [0.0]
+    for v in skipb:
+        skipb_cum.append(skipb_cum[-1] + v)
+
+    def seg(b0, j0, b1, j1):
+        d = (wcum[b1] - wcum[b0]) * rate
+        act = mid[j1] - mid[j0]
+        cost = ((act - d) / (0.18 * d + 0.25)) ** 2
+        cost += skipb_cum[b1] - skipb_cum[b0 + 1]     # Grenzen dazwischen ohne Pause
+        cost += SKIP_PAUSE * (j1 - j0 - 1)            # Pausen dazwischen ohne Grenze
+        return cost
+
+    INF = float("inf")
+    best = {(0, 0): (0.0, None)}
+    states = [(b, j) for b in range(1, M + 1) for j in range(1, N + 1)] + [(M + 1, N + 1)]
+    for b, j in states:
+        cand = (INF, None)
+        for (b0, j0), (c0, _) in best.items():
+            if b0 < b and j0 < j:
+                c = c0 + seg(b0, j0, b, j)
+                if c < cand[0]:
+                    cand = (c, (b0, j0))
+        if cand[1] is not None:
+            best[(b, j)] = cand
+    bounds = {}
+    node = best[(M + 1, N + 1)][1]
+    while node and node != (0, 0):
+        b, j = node
+        bounds[b - 1] = P[j]
+        node = best[node][1]
+    return bounds
+
+
+def norm_words(text):
+    t = re.sub(r"[^a-z' ]", " ", clean(text).lower())
+    return t.split()
+
+
+def forced_align(vo_path):
+    """Wort-genaue Ausrichtung des bekannten Skripts an die Aufnahme (pocketsphinx, offline).
+
+    Gibt Liste (start, end) je Cue in Audio-Sekunden zurück oder None, wenn nicht möglich.
+    """
+    try:
+        from pocketsphinx import Decoder
+    except ImportError:
+        return None
+    raw = subprocess.run(["ffmpeg", "-v", "error", "-i", vo_path, "-ac", "1", "-ar", "16000", "-f", "s16le", "-"],
+                         capture_output=True, check=True).stdout
+    per_cue = [norm_words(t) for _, t, _ in CUES]
+    try:
+        d = Decoder(samprate=16000, bestpath=False, loglevel="FATAL")
+        for w, ph in PRONUNCIATIONS.items():
+            if d.lookup_word(w) is None:
+                d.add_word(w, ph, True)
+        d.set_align_text(" ".join(w for ws in per_cue for w in ws))
+        d.start_utt()
+        d.process_raw(raw, full_utt=True)
+        d.end_utt()
+        segs = [(s.start_frame / 100, s.end_frame / 100) for s in d.seg()
+                if not s.word.startswith("<") and s.word != "[NOISE]"]
+    except Exception as e:  # unbekanntes Wort o. Ä. -> Rückfall auf Pausen-Methode
+        print(f"Wort-Ausrichtung nicht möglich ({e}); nutze Pausen-Methode.")
+        return None
+    if len(segs) != sum(len(ws) for ws in per_cue):
+        return None
+    out, k = [], 0
+    for ws in per_cue:
+        out.append((segs[k][0], segs[k + len(ws) - 1][1]))
+        k += len(ws)
+    return out
+
+
 def aligned(vo_path):
     dur = probe_duration(vo_path)
     sil = detect_silences(vo_path)
@@ -64,34 +159,27 @@ def aligned(vo_path):
     speech_end = sil[-1][0] if sil and sil[-1][1] >= dur - 0.05 else dur
     inner = [(a, b) for a, b in sil if a > speech_start + 0.05 and b < speech_end - 0.05]
 
-    # Geplante Struktur auf echte Sprechdauer skalieren
-    plan = planned()
-    p0 = plan["cues"][0]["start"]
-    p1 = plan["cues"][-1]["end"]
-    k = (speech_end - speech_start) / (p1 - p0)
-    est = [(speech_start + (c["start"] - p0) * k, speech_start + (c["end"] - p0) * k) for c in plan["cues"]]
+    # 1. Wahl: Wort-Ausrichtung; Rückfall: Sprechpausen den Cue-Grenzen zuordnen
+    words_al = forced_align(vo_path)
+    if words_al:
+        cues = [{"id": cid, "text": text, "start": round(a, 3), "end": round(b, 3)}
+                for (cid, text, _), (a, b) in zip(CUES, words_al)]
+        method, bounds = "forced alignment (pocketsphinx, word level)", {}
+    else:
+        method = "pause matching (ffmpeg silencedetect)"
+        bounds = match_pauses(inner, speech_start, speech_end)
+        cues = pause_cues(bounds, speech_start, speech_end)
+    offset = LEAD_IN  # Audio startet nach dem Vorlauf
+    for c in cues:
+        c["start"] = round(c["start"] + offset, 3)
+        c["end"] = round(c["end"] + offset, 3)
+    total = max(dur + offset, cues[-1]["end"]) + TAIL
+    return {"mode": "voiceover", "alignment": method, "voiceover_duration": round(dur, 3), "total": round(total, 3),
+            "audio_offset": offset, "matched_pauses": len(bounds), "detected_pauses": len(inner),
+            "cues": cues}
 
-    # Satz-/Absatzgrenzen auf echte Pausen legen (monoton, je Pause nur einmal)
-    bounds = {}  # index i -> (end_of_cue_i, start_of_cue_i+1)
-    used = set()
-    last = speech_start
-    for i, (_, _, p) in enumerate(CUES[:-1]):
-        if p not in ("s", "p"):
-            continue
-        target = (est[i][1] + est[i + 1][0]) / 2
-        best = None
-        for j, (a, b) in enumerate(inner):
-            if j in used or a <= last:
-                continue
-            dist = abs((a + b) / 2 - target)
-            if dist < 2.5 * max(k, 0.5) and (best is None or dist < best[0]):
-                best = (dist, j)
-        if best:
-            a, b = inner[best[1]]
-            used.add(best[1])
-            bounds[i] = (a, b)
-            last = b
 
+def pause_cues(bounds, speech_start, speech_end):
     # Anker: Start, Satzgrenzen, Ende -> Cues dazwischen nach Wortzahl verteilen
     anchors = [(-1, speech_start)] + [(i, None) for i in sorted(bounds)] + [(len(CUES) - 1, speech_end)]
     cues = []
@@ -112,14 +200,7 @@ def aligned(vo_path):
             seg_start = bounds[idx][1]
         first = idx + 1
 
-    offset = LEAD_IN  # Audio startet nach dem Vorlauf
-    for c in cues:
-        c["start"] = round(c["start"] + offset, 3)
-        c["end"] = round(c["end"] + offset, 3)
-    total = max(dur + offset, cues[-1]["end"]) + TAIL
-    return {"mode": "voiceover", "voiceover_duration": round(dur, 3), "total": round(total, 3),
-            "audio_offset": offset, "matched_pauses": len(bounds),
-            "sentence_boundaries": sum(1 for _, _, p in CUES[:-1] if p in "sp"), "cues": cues}
+    return cues
 
 
 def srt_time(t):

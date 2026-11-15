@@ -139,5 +139,10 @@ SFX = [
     ("end4", 0.40, "outro_chime", 0.55),
 ]
 
+# Aussprache für Wörter, die das pocketsphinx-Wörterbuch nicht kennt (CMU-Phoneme), für die Wort-Ausrichtung
+PRONUNCIATIONS = {
+    "defogger": "D IY F AA G ER",
+}
+
 # Keywords for the description
 TOPIC_TAGS = ["#Aviation", "#AirplaneFacts"]

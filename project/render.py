@@ -10,6 +10,7 @@ Alle Grafiken werden hier per Code gezeichnet (PIL, 2x-Supersampling), Sounds in
 import argparse
 import math
 import os
+import re
 import subprocess
 import sys
 from functools import lru_cache
@@ -983,17 +984,30 @@ def encode(tl, path, audio_wav, workers):
         raise SystemExit("ffmpeg failed")
 
 
-def mux_voiceover(tl, video, audio_wav, vo, path):
-    """Voiceover (unverändertes Tempo) + Soundeffekte unter das fertige Video legen."""
+def measure_lufs(path):
+    out = subprocess.run(["ffmpeg", "-hide_banner", "-nostats", "-i", path, "-af", "ebur128", "-f", "null", "-"],
+                         capture_output=True, text=True).stderr
+    vals = re.findall(r"I:\s+(-?[\d.]+) LUFS", out)
+    return float(vals[-1]) if vals else None
+
+
+def mux_voiceover(tl, video, audio_wav, vo, path, target_lufs=-14.0):
+    """Voiceover (unverändertes Tempo) + Soundeffekte unter das fertige Video legen, auf ~-14 LUFS bringen."""
     off_ms = int(round(tl["audio_offset"] * 1000))
-    cmd = ["ffmpeg", "-y", "-hide_banner", "-loglevel", "error", "-i", video, "-i", audio_wav, "-i", vo,
-           "-filter_complex",
-           f"[2:a]aresample=48000,aformat=channel_layouts=stereo,adelay={off_ms}|{off_ms}[vo];"
-           f"[1:a]volume=0.40[fx];[vo][fx]amix=inputs=2:duration=longest:normalize=0,"
-           f"alimiter=limit=0.95[a]",
-           "-map", "0:v", "-map", "[a]", "-c:v", "copy", "-c:a", "aac", "-b:a", "192k",
-           "-t", f"{tl['total']:.3f}", "-movflags", "+faststart", path]
-    subprocess.run(cmd, check=True)
+    mix_wav = os.path.splitext(path)[0] + "_mix.wav"
+    subprocess.run(["ffmpeg", "-y", "-hide_banner", "-loglevel", "error", "-i", audio_wav, "-i", vo,
+                    "-filter_complex",
+                    f"[1:a]aresample=48000,aformat=channel_layouts=stereo,adelay={off_ms}|{off_ms}[vo];"
+                    f"[0:a]volume=0.40[fx];[vo][fx]amix=inputs=2:duration=longest:normalize=0[a]",
+                    "-map", "[a]", "-t", f"{tl['total']:.3f}", "-c:a", "pcm_s16le", mix_wav], check=True)
+    lufs = measure_lufs(mix_wav)
+    gain = 0.0 if lufs is None else max(-6.0, min(12.0, target_lufs - lufs))
+    subprocess.run(["ffmpeg", "-y", "-hide_banner", "-loglevel", "error", "-i", video, "-i", mix_wav,
+                    "-af", f"volume={gain:.2f}dB,alimiter=limit=0.79:attack=1:release=60:level=disabled",
+                    "-map", "0:v", "-map", "1:a", "-c:v", "copy", "-c:a", "aac", "-b:a", "192k", "-ar", "48000",
+                    "-t", f"{tl['total']:.3f}", "-movflags", "+faststart", path], check=True)
+    os.remove(mix_wav)
+    print(f"  Lautheit: {lufs} LUFS -> Gain {gain:+.1f} dB")
 
 
 def main():
