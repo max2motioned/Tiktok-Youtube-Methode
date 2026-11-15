@@ -1,0 +1,4 @@
+__pycache__/
+output/stills/
+output/sfx_track.wav
+input/*.mp3
