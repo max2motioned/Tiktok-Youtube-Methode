@@ -263,27 +263,6 @@ def bg_wall():
     return im
 
 
-def brand(cv, a=1.0):
-    cv.put(brand_sprite(), 540, 250, a)
-
-
-@lru_cache(maxsize=None)
-def brand_sprite():
-    t = txt("EVERYDAY UNPACKED", 28, WHITE, "xb", track=3)
-    w, h = t.width + 110 * S, 62 * S
-    im = Image.new("RGBA", (w, h), (0, 0, 0, 0))
-    d = ImageDraw.Draw(im)
-    d.rounded_rectangle([0, 0, w - 1, h - 1], radius=h // 2, fill=(10, 18, 34, 225))
-    # kleines Logo: offene Box
-    bx, by = 26 * S, 16 * S
-    d.polygon([(bx, by + 12 * S), (bx + 36 * S, by + 12 * S), (bx + 32 * S, by + 32 * S), (bx + 4 * S, by + 32 * S)],
-              fill=AMBER)
-    d.polygon([(bx - 4 * S, by + 2 * S), (bx + 14 * S, by + 10 * S), (bx, by + 12 * S)], fill=(255, 210, 140))
-    d.polygon([(bx + 40 * S, by + 2 * S), (bx + 22 * S, by + 10 * S), (bx + 36 * S, by + 12 * S)], fill=(255, 210, 140))
-    im.alpha_composite(t, (74 * S, (h - t.height) // 2 + S))
-    return im
-
-
 def headline(cv, s, t, t0, t1, y=400, fg=WHITE, size=64, fade=0.25):
     a = window(t, t0, t1, fade, fade)
     if a <= 0:
@@ -500,35 +479,55 @@ class Ctx:
         self.total = tl["total"]
 
 
+def passenger(cv, x, y, a=1.0):
+    """Passagier von hinten (Hinterkopf + Schultern), sitzt direkt am Fenster."""
+    bg = WALL_B
+    cv.rrect(x - 250, y + 95, x + 260, y + 700, 210, fill=mix(bg, (46, 92, 118), a))
+    cv.rrect(x - 52, y + 40, x + 52, y + 140, 30, fill=mix(bg, (206, 160, 126), a))
+    cv.ellipse(x + 104, y + 12, 22, 30, fill=mix(bg, (222, 172, 136), a))
+    cv.ellipse(x, y, 112, 124, fill=mix(bg, (58, 44, 38), a))
+    cv.ellipse(x - 30, y - 50, 44, 30, fill=mix(bg, (78, 60, 50), a))
+
+
 def sc_hook(cv, t, C, s0, s1):
     cv.img.paste(bg_wall())
     T = C.T
-    zk = smooth(ramp(t, T["hook2"] + 0.1, 1.3))
-    z = lerp(1.0 + 0.05 * clamp(t / 3), 2.7, zk)
-    fy = lerp(780, 1086, zk)
-    cv.cam(z, 540, fy, 540, 800)
-    hx, hy = front_window(cv, 540, 780, 500, 720, t, shade=0.17)
-    a = ramp(t, T["hook3"], 0.2)
-    if a > 0:
-        for k in range(3):
-            ph = ((t - T["hook3"]) * 0.9 + k / 3) % 1
-            cv.circle(hx, hy, 10 + 26 * ph, outline=mix((235, 225, 210), AMBER, a * (1 - ph)), w=2.2)
-        cv.circle(hx, hy, 15, outline=mix((235, 225, 210), AMBER, a), w=2.5)
+    hx, hy = 540, 780 + 360 - 0.075 * 720          # Loch in Weltkoordinaten
+    # Bild 1: extreme Nahaufnahme mit "Punch", dann Rückzoom zum ganzen Fenster, dann langsam wieder hin
+    punch = 1 + 0.22 * (1 - out_cubic(ramp(t, 0, 0.45)))
+    back = smooth(ramp(t, T["hook2"] - 0.05, 1.1))
+    push = smooth(ramp(t, T["hook3"] + 0.3, max(0.6, s1 - T["hook3"])))
+    z = lerp(3.2 * punch, 1.0, back) * (1 + 0.35 * push)
+    fx, fy = lerp(hx, 540, back), lerp(hy, 800, back)
+    fx, fy = lerp(fx, hx, push * 0.5), lerp(fy, hy, push * 0.5)
+    cv.cam(z, fx, fy, 540, lerp(800, 860, back))
+    front_window(cv, 540, 780, 500, 720, t, shade=0.17)
+    for k in range(3):
+        ph = (t * 0.9 + k / 3) % 1
+        cv.circle(hx, hy, 9 + 30 * ph, outline=mix(SKY_B, AMBER, 1 - ph), w=2.4 / max(1, z * 0.45))
+    cv.circle(hx, hy, 14, outline=AMBER, w=2.6 / max(1, z * 0.45))
     cv.reset()
-    brand(cv)
-    if a > 0:
-        # Pfeil + Label im Bildschirmraum
-        X, Y = 540, 800  # Bildschirmposition des Lochs nach Zoom
-        k = out_back(ramp(t, T["hook3"] + 0.05, 0.35))
-        cv.arrow(X, 560 + 30 * (1 - k), X, Y - 70, AMBER, 12, 36)
-        cv.put(pill("TINY HOLE", 70, NAVY, (255, 184, 72, 255)), X, 510, a, 0.7 + 0.3 * k)
-    headline(cv, "LOOK CLOSER", t, T["hook2"] - 0.1, T["hook3"] - 0.05, y=400, size=58)
+    # Pfeil auf das Loch (nur in der Nahaufnahme)
+    aa = 1 - ramp(t, T["hook2"] - 0.1, 0.25)
+    if aa > 0:
+        k = out_back(ramp(t, 0.15, 0.4))
+        X, Y = cv_point(z, fx, fy, lerp(800, 860, back), hx, hy)
+        cv.arrow(X, 470 + 40 * (1 - k), X, Y - 64, mix(SKY_B, AMBER, aa), 14, 40)
+    # Passagier gleitet von links ins Bild
+    pk = out_cubic(ramp(t, T["hook2"] + 0.35, 0.6))
+    if pk > 0:
+        passenger(cv, lerp(-260, 215, pk) - push * 40, 1020 + push * 30)
+    headline(cv, "EVERY PLANE WINDOW HAS THIS", t, -1, T["hook2"] - 0.05, y=400, size=58)
+    headline(cv, "NEVER NOTICED?", t, T["hook3"] - 0.05, s1 + 1, y=400, fg=AMBER, size=60)
+
+
+def cv_point(z, fx, fy, ty, x, y):
+    return (x - fx) * z + 540, (y - fy) * z + ty
 
 
 def sc_purpose(cv, t, C, s0, s1):
     cv.img.paste(bg_navy())
     T = C.T
-    brand(cv)
     front_window(cv, 540, 650, 230, 330, t, shade=0.15)
     jobs = ramp(t, T["purp2"] + 0.4, 0.3)
     for i, (cid, word, cx) in enumerate((("nc1", "CRACK?", 290), ("nc2", "DEFECT?", 790))):
@@ -582,7 +581,6 @@ def slab(cv, cx, cy, off, thick, face, side, n=None, w=330, h=470):
 def sc_assume(cv, t, C, s0, s1):
     cv.img.paste(bg_navy())
     T = C.T
-    brand(cv)
     sp = smooth(ramp(t, T["ass3"] + 0.1, 0.8))
     shake = math.sin((t - T["ass2"]) * 40) * 10 * (ramp(t, T["ass2"], 0.05) - ramp(t, T["ass2"] + 0.5, 0.2)) \
         if t > T["ass2"] else 0
@@ -640,14 +638,12 @@ def sc_layers(cv, t, C, s0, s1):
         cv.arrow(330, 985, 330 - 40 * k, 985, mix(CABIN_AIR, WHITE, k), 6, 18)
     label(cv, "MIDDLE", MID_X - 20, 475, t, T["pan2"] + 0.1, AMBER, 40)
     label(cv, "OUTER", OUT_X + 60, 475, t, T["pan2"] + 0.75, AMBER, 40)
-    brand(cv)
     headline(cv, "2 STRONG ACRYLIC PANES", t, T["pan1"] + 0.1, s1 + 1, y=372, size=54)
 
 
 def sc_pressure(cv, t, C, s0, s1):
     cv.img.paste(bg_navy())
     T = C.T
-    brand(cv)
     pa = 1 - smooth(ramp(t, T["alt2"] - 0.1, 0.4))
     if pa > 0:
         k = smooth(ramp(t, s0 + 0.1, max(0.6, T["alt2"] - s0 - 0.4)))
@@ -755,7 +751,6 @@ def sc_hole(cv, t, C, s0, s1):
     if t > T["hole2"]:
         k = out_cubic(ramp(t, T["hole2"] + 0.1, 0.3))
         cv.arrow(470, 1035, 470 + 50 * k, 1035 + 30 * k, mix(CABIN_AIR, WHITE, k), 6, 18)
-    brand(cv)
     headline(cv, "THE TINY HOLE", t, T["hole1"], T["flow3"], y=372, size=54)
     headline(cv, "EQUAL PRESSURE", t, T["flow3"], T["load1"], y=372, fg=MINT, size=54)
     headline(cv, "OUTER PANE: FULL LOAD", t, T["load1"], T["load2"] + 0.2, y=372, fg=AMBER, size=54)
@@ -793,14 +788,13 @@ def sc_fog(cv, t, C, s0, s1):
     if ck > 0:
         cv.circle(820, 600, 62 * ck, fill=MINT)
         cv.line([(795, 600), (814, 622), (848, 580)], NAVY, 13 * ck)
-    brand(cv)
     headline(cv, "JOB 2", t, T["fog1"] - 0.05, T["fog3"] + 0.3, y=400, fg=AMBER)
     headline(cv, "NO FOG · NO FROST", t, T["fog3"] + 0.3, s1 + 1, y=400, fg=MINT, size=58)
 
 
 @lru_cache(maxsize=None)
 def endcard_sprite():
-    w, h = 900 * S, 560 * S
+    w, h = 900 * S, 380 * S
     im = Image.new("RGBA", (w, h), (0, 0, 0, 0))
     d = ImageDraw.Draw(im)
     d.rounded_rectangle([0, 0, w - 1, h - 1], radius=48 * S, fill=(13, 22, 40, 246), outline=CARD_LINE, width=3 * S)
@@ -813,11 +807,6 @@ def endcard_sprite():
     d.polygon([(bx - 20 * S, by + 28 * S), (bx - 36 * S, by + 54 * S), (bx + 4 * S, by + 28 * S)], fill=MINT)
     for k in (-1, 0, 1):
         d.ellipse([bx + k * 28 * S - 8 * S, by - 13 * S, bx + k * 28 * S + 8 * S, by + 3 * S], fill=NAVY)
-    d.line([(90 * S, 380 * S), (w - 90 * S, 380 * S)], fill=CARD_LINE, width=2 * S)
-    b = brand_sprite()
-    im.alpha_composite(b, ((w - b.width) // 2, 410 * S))
-    hd = txt(EP.HANDLE, 34, SOFT, "semi")
-    im.alpha_composite(hd, ((w - hd.width) // 2, 486 * S))
     return im
 
 
@@ -842,10 +831,8 @@ def sc_outro(cv, t, C, s0, s1):
             drop_icon(cv, cx, y - 30, 52 * k, P_COLD)
             cv.line([(cx - 44 * k, y - 76 * k), (cx + 44 * k, y + 16 * k)], CORAL, 10 * k)
         cv.put(txt(word, 40, WHITE, "black"), cx, y + 72 * k, 1, k)
-    if ek <= 0.5:
-        brand(cv, 1 - ek * 2)
     if ek > 0:
-        y = lerp(1500, 800, out_cubic(ek))
+        y = lerp(1500, 760, out_cubic(ek))
         bob = math.sin(max(0, t - T["end4"]) * 5) * 4 * ramp(t, T["end4"], 0.3)
         cv.put(endcard_sprite(), 540, y + bob, min(1, ek * 1.5))
 
@@ -964,8 +951,8 @@ def render_frame(i):
         prev = draw_scene(pname, t, p0, p1)
         frame = Image.blend(prev, frame, smooth((t - s0) / XFADE))
     draw_caption(frame, G["tl"], t)
-    # sanfter Ein-/Ausblender
-    fade = min(ramp(t, 0, 0.25), 1 - ramp(t, G["tl"]["total"] - 0.4, 0.4))
+    # kein Einblenden: Bild 1 ist sofort voll sichtbar (Hook); nur am Ende sanft ausblenden
+    fade = 1 - ramp(t, G["tl"]["total"] - 0.4, 0.4)
     if fade < 1:
         frame = Image.blend(Image.new("RGB", frame.size, (0, 0, 0)), frame, fade)
     return frame.tobytes()

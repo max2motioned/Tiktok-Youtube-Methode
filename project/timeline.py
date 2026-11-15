@@ -11,7 +11,7 @@ import subprocess
 
 from episode import CUES
 
-LEAD_IN = 0.6          # Sekunden vor dem ersten Wort (Kabinen-Gong)
+LEAD_IN = 0.35         # Sekunden vor dem ersten Wort (Pop auf dem ersten Bild)
 TAIL = 2.4             # Endkarte nach dem letzten Wort
 TARGET_TOTAL = 82.0    # geplante Länge ohne Voiceover (75–85 s gefordert)
 PAUSES = {"c": 0.12, "s": 0.38, "p": 0.75}

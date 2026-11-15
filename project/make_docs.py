@@ -13,7 +13,6 @@ def write_scene_plan(tl, bounds, path):
     mode = ("geplantes Timing (noch kein Voiceover) – wird beim Render mit input/voiceover.mp3 automatisch angepasst"
             if tl["mode"] == "planned" else "an input/voiceover.mp3 ausgerichtet")
     L = [f"# Scene Plan – {EP.EPISODE_TITLE}", "",
-         f"**Channel:** {EP.CHANNEL} ({EP.HANDLE})  ",
          f"**Format:** 1080 × 1920 (9:16), 30 fps  ",
          f"**Total length:** {tl['total']:.1f} s  ",
          f"**Timing:** {mode}", "",
@@ -33,7 +32,7 @@ def write_scene_plan(tl, bounds, path):
         L += [f"**Visual:** {visual}", "", f"**Motion:** {motion}", "", f"**On-screen text:** {onscreen}", ""]
         fx = [f"{fmt(starts[c] + off)} {name}" for c, off, name, _ in EP.SFX if c in cue_by_scene[sid]]
         L += ["**Sound effects:** " + (", ".join(fx) if fx else "–") + " (plus quiet cabin-hum bed throughout)", ""]
-    L += ["## Transitions", "", "0.32 s crossfade between all scenes; 0.25 s fade in from black, 0.4 s fade out.", "",
+    L += ["## Transitions", "", "0.32 s crossfade between all scenes; no fade-in (frame 1 is the hook), 0.4 s fade out.", "",
           "## Caption cues", "", "| # | Start | End | Text |", "|---|---|---|---|"]
     for i, c in enumerate(tl["cues"]):
         L.append(f"| {i + 1} | {fmt(c['start'])} | {fmt(c['end'])} | {clean(c['text'])} |")

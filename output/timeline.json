@@ -1,217 +1,217 @@
 {
   "mode": "planned",
   "total": 82.0,
-  "speech_rate_wpm": 165.2,
+  "speech_rate_wpm": 162.8,
   "audio_offset": 0.0,
   "cues": [
     {
       "id": "hook1",
-      "text": "Next time you get a window seat on a plane,",
-      "start": 0.6,
-      "end": 4.232
+      "text": "Every airplane window has a *tiny hole* in it.",
+      "start": 0.35,
+      "end": 3.666
     },
     {
       "id": "hook2",
-      "text": "look at the bottom of the window.",
-      "start": 4.352,
-      "end": 6.894
+      "text": "You've probably sat *right next to one*",
+      "start": 4.046,
+      "end": 6.625
     },
     {
       "id": "hook3",
-      "text": "There's a *tiny hole.*",
-      "start": 7.274,
-      "end": 8.727
+      "text": "and *never noticed.*",
+      "start": 6.745,
+      "end": 7.85
     },
     {
       "id": "nc1",
       "text": "It's not a *crack,*",
-      "start": 9.107,
-      "end": 10.56
+      "start": 8.23,
+      "end": 9.704
     },
     {
       "id": "nc2",
       "text": "and it's not a *defect.*",
-      "start": 10.68,
-      "end": 12.496
+      "start": 9.824,
+      "end": 11.666
     },
     {
       "id": "purp1",
       "text": "It's there *on purpose,*",
-      "start": 12.876,
-      "end": 14.329
+      "start": 12.046,
+      "end": 13.52
     },
     {
       "id": "purp2",
       "text": "and it quietly does *two jobs.*",
-      "start": 14.449,
-      "end": 16.628
+      "start": 13.64,
+      "end": 15.851
     },
     {
       "id": "ass1",
       "text": "Most people assume a plane window",
-      "start": 17.378,
-      "end": 19.557
+      "start": 16.601,
+      "end": 18.811
     },
     {
       "id": "ass2",
       "text": "is *one thick sheet.*",
-      "start": 19.677,
-      "end": 21.13
+      "start": 18.931,
+      "end": 20.405
     },
     {
       "id": "ass3",
       "text": "It's actually *three.*",
-      "start": 21.51,
-      "end": 22.599
+      "start": 20.785,
+      "end": 21.89
     },
     {
       "id": "scr1",
       "text": "The pane you can touch",
-      "start": 23.349,
-      "end": 25.165
+      "start": 22.64,
+      "end": 24.483
     },
     {
       "id": "scr2",
       "text": "is just a *scratch shield.*",
-      "start": 25.285,
-      "end": 27.101
+      "start": 24.603,
+      "end": 26.445
     },
     {
       "id": "scr3",
       "text": "It holds back *no pressure* at all.",
-      "start": 27.481,
-      "end": 30.023
+      "start": 26.825,
+      "end": 29.404
     },
     {
       "id": "pan1",
       "text": "Behind it sit two strong *acrylic panes:*",
-      "start": 30.403,
-      "end": 32.946
+      "start": 29.784,
+      "end": 32.363
     },
     {
       "id": "pan2",
       "text": "a *middle* one and an *outer* one.",
-      "start": 33.066,
-      "end": 35.608
+      "start": 32.483,
+      "end": 35.062
     },
     {
       "id": "alt1",
       "text": "At *cruising altitude,*",
-      "start": 36.358,
-      "end": 37.448
+      "start": 35.812,
+      "end": 36.917
     },
     {
       "id": "alt2",
       "text": "the air outside is *thin.*",
-      "start": 37.568,
-      "end": 39.384
+      "start": 37.037,
+      "end": 38.88
     },
     {
       "id": "alt3",
       "text": "The air inside is kept much *denser,*",
-      "start": 39.764,
-      "end": 42.306
+      "start": 39.26,
+      "end": 41.839
     },
     {
       "id": "alt4",
       "text": "so it *pushes outward* on every window",
-      "start": 42.426,
-      "end": 44.968
+      "start": 41.959,
+      "end": 44.538
     },
     {
       "id": "alt5",
       "text": "with *hundreds of kilos* of force.",
-      "start": 45.088,
-      "end": 47.267
+      "start": 44.658,
+      "end": 46.868
     },
     {
       "id": "hole1",
       "text": "That *tiny hole*",
-      "start": 48.017,
-      "end": 49.107
+      "start": 47.618,
+      "end": 48.724
     },
     {
       "id": "hole2",
       "text": "goes through the *middle pane.*",
-      "start": 49.227,
-      "end": 51.043
+      "start": 48.844,
+      "end": 50.686
     },
     {
       "id": "flow1",
       "text": "Cabin air *flows into the gap* behind it,",
-      "start": 51.423,
-      "end": 54.329
+      "start": 51.066,
+      "end": 54.014
     },
     {
       "id": "flow2",
       "text": "so the middle pane feels",
-      "start": 54.449,
-      "end": 56.264
+      "start": 54.134,
+      "end": 55.976
     },
     {
       "id": "flow3",
       "text": "*equal pressure* on both sides.",
-      "start": 56.384,
-      "end": 58.2
+      "start": 56.096,
+      "end": 57.938
     },
     {
       "id": "load1",
       "text": "The *outer pane* carries the whole load,",
-      "start": 58.58,
-      "end": 61.123
+      "start": 58.318,
+      "end": 60.897
     },
     {
       "id": "load2",
       "text": "and the middle pane waits,",
-      "start": 61.243,
-      "end": 63.059
+      "start": 61.017,
+      "end": 62.859
     },
     {
       "id": "load3",
       "text": "unstressed, as a *backup.*",
-      "start": 63.179,
-      "end": 64.631
+      "start": 62.979,
+      "end": 64.453
     },
     {
       "id": "fog1",
       "text": "Job number two:",
-      "start": 65.381,
-      "end": 66.471
+      "start": 65.203,
+      "end": 66.308
     },
     {
       "id": "fog2",
       "text": "that same airflow lets *moisture escape,*",
-      "start": 66.591,
-      "end": 68.77
+      "start": 66.428,
+      "end": 68.639
     },
     {
       "id": "fog3",
       "text": "so the gap stays clear of *fog and frost.*",
-      "start": 68.89,
-      "end": 72.159
+      "start": 68.759,
+      "end": 72.075
     },
     {
       "id": "end1",
       "text": "One *tiny hole.*",
-      "start": 72.909,
-      "end": 73.999
+      "start": 72.825,
+      "end": 73.93
     },
     {
       "id": "end2",
       "text": "A *spare window* and a *defogger.*",
-      "start": 74.379,
-      "end": 76.558
+      "start": 74.31,
+      "end": 76.521
     },
     {
       "id": "end3",
       "text": "What everyday thing",
-      "start": 76.938,
-      "end": 78.027
+      "start": 76.901,
+      "end": 78.006
     },
     {
       "id": "end4",
       "text": "should we *unpack next?*",
-      "start": 78.147,
+      "start": 78.126,
       "end": 79.6
     }
   ]

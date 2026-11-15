@@ -9,15 +9,13 @@ Wörter in *Sternchen* werden in den Untertiteln farbig hervorgehoben.
 pause: Pause NACH dem Cue im geplanten Timing ("c" Komma, "s" Satzende, "p" Absatz).
 """
 
-CHANNEL = "Everyday Unpacked"
-HANDLE = "@everydayunpacked"
 EPISODE_TITLE = "Why airplane windows have a tiny hole"
 
 # (id, text, pause)
 CUES = [
-    ("hook1", "Next time you get a window seat on a plane,", "c"),
-    ("hook2", "look at the bottom of the window.", "s"),
-    ("hook3", "There's a *tiny hole.*", "s"),
+    ("hook1", "Every airplane window has a *tiny hole* in it.", "s"),
+    ("hook2", "You've probably sat *right next to one*", "c"),
+    ("hook3", "and *never noticed.*", "s"),
     ("nc1", "It's not a *crack,*", "c"),
     ("nc2", "and it's not a *defect.*", "s"),
     ("purp1", "It's there *on purpose,*", "c"),
@@ -55,9 +53,11 @@ CUES = [
 # (scene_id, start_cue, title, visual, motion, on-screen text)
 SCENES = [
     ("hook", "hook1", "Hook – the tiny hole",
-     "Cabin wall with an oval window; clouds drift past outside, the shade is half up.",
-     "Slow push-in, then camera zooms to the bottom of the inner pane; amber ring pulses around the hole.",
-     "'WHY IS THIS HERE?' / label 'TINY HOLE'"),
+     "Frame 1 is an extreme close-up of the hole with clouds and wing behind it; then the full oval window "
+     "on the cabin wall with a passenger (seen from behind) sitting right next to it.",
+     "Snap punch-in on frame 1, amber rings pulse, arrow drops onto the hole; fast pull-back reveal, "
+     "passenger slides in, then a slow push back toward the hole into the next scene.",
+     "'EVERY PLANE WINDOW HAS THIS' (visible from frame 1) -> 'NEVER NOTICED?'"),
     ("purpose", "nc1", "Not a crack, not a defect",
      "Dark navy board with a small window icon and two 'suspect' cards (crack, defect).",
      "Cards slide up, red X marks stamp on, green 'ON PURPOSE' stamp drops on the window, two job badges pop up.",
@@ -84,17 +84,20 @@ SCENES = [
      "Moisture droplets drift toward the hole and out; fog wipes clear; check mark pops.",
      "'JOB 2', 'NO FOG · NO FROST'"),
     ("outro", "end1", "Payoff + question",
-     "Window front view with the hole, two result icons, then end card with channel name.",
-     "Icons pop in left/right, window shrinks, end card slides up, comment bubble bounces.",
-     "'SPARE WINDOW' + 'DEFOGGER', 'WHAT SHOULD WE UNPACK NEXT?', 'EVERYDAY UNPACKED @everydayunpacked'"),
+     "Window front view with the hole, two result icons, then a short question card (no channel name, no follow ask).",
+     "Icons pop in left/right, question card slides up, comment bubble bounces.",
+     "'SPARE WINDOW' + 'DEFOGGER', 'WHAT SHOULD WE UNPACK NEXT?'"),
 ]
 
 # Soundeffekte: (cue_id, offset_seconds, sound_name, gain)
 SFX = [
-    ("hook1", -0.45, "cabin_chime", 0.55),
-    ("hook2", 0.10, "whoosh_in", 0.50),
-    ("hook3", 0.05, "pop", 0.70),
-    ("hook3", 0.25, "sparkle", 0.35),
+    ("hook1", -0.33, "pop", 0.70),
+    ("hook1", -0.28, "sparkle", 0.35),
+    ("hook1", 0.15, "cabin_chime", 0.35),
+    ("hook2", -0.05, "whoosh", 0.55),
+    ("hook2", 0.45, "tap", 0.35),
+    ("hook3", 0.05, "pop_high", 0.45),
+    ("hook3", 0.55, "whoosh_in", 0.35),
     ("nc1", -0.15, "whoosh", 0.40),
     ("nc1", 0.45, "buzz", 0.35),
     ("nc2", 0.45, "buzz", 0.35),
