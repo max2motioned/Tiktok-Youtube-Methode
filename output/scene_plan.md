@@ -1,7 +1,7 @@
 # Scene Plan – Why airplane windows have a tiny hole
 
 **Format:** 1080 × 1920 (9:16), 30 fps  
-**Total length:** 69.1 s  
+**Total length:** 67.9 s  
 **Timing:** an input/voiceover.mp3 ausgerichtet
 
 Safe zones: key text & captions stay between y ≈ 220 px and y ≈ 1430 px and x ≈ 60–1000 px (top status/tabs and bottom description/buttons of TikTok & YouTube Shorts stay clear). Captions are centred at y = 1350 px on a dark box.
@@ -90,21 +90,21 @@ Safe zones: key text & captions stay between y ≈ 220 px and y ≈ 1430 px and 
 
 **Sound effects:** 0:53.2 whoosh, 0:53.6 pop, 0:54.9 air_hiss, 0:57.9 wipe, 0:58.5 ding (plus quiet cabin-hum bed throughout)
 
-## Scene 8 – Payoff + question  `1:00.3 – 1:09.1`
+## Scene 8 – Payoff + question  `1:00.3 – 1:07.9`
 
 **Voiceover:** One tiny hole. A spare window and a defogger. What everyday thing should we unpack next?
 
 **Visual:** Window front view with the hole, two result icons, then a short question card (no channel name, no follow ask).
 
-**Motion:** Icons pop in left/right, question card slides up, comment bubble bounces.
+**Motion:** Icons pop in left/right, question card snaps up, then flies out while the camera zooms into the hole and lands exactly on frame 1 (seamless loop).
 
 **On-screen text:** 'SPARE WINDOW' + 'DEFOGGER', 'WHAT SHOULD WE UNPACK NEXT?'
 
-**Sound effects:** 1:00.4 whoosh, 1:02.1 pop, 1:03.0 pop_high, 1:04.3 whoosh_in, 1:05.7 outro_chime (plus quiet cabin-hum bed throughout)
+**Sound effects:** 1:00.4 whoosh, 1:02.1 pop, 1:03.0 pop_high, 1:04.3 whoosh_in, 1:05.5 outro_chime (plus quiet cabin-hum bed throughout)
 
 ## Transitions
 
-0.32 s crossfade between all scenes; no fade-in (frame 1 is the hook), 0.4 s fade out.
+0.32 s crossfade between all scenes; no fade-in or fade-out. The last 0.7 s zoom from the window into the hole and land exactly on frame 1, so the video loops seamlessly (audio bed and the closing whoosh also wrap around).
 
 ## Caption cues
 

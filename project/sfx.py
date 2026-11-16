@@ -226,17 +226,16 @@ def cabin_ambience(d):
     shape[f < 25] = 0
     x = np.fft.irfft(spec * shape, n)
     x = _norm(x, 1.0)
-    p = np.arange(n) / SR
-    fade = np.clip(p / 1.5, 0, 1) * np.clip((d - p) / 2.0, 0, 1)
-    return x * fade
+    return x  # FFT-Rauschen ist periodisch: Ende geht nahtlos in den Anfang über (Loop)
 
 
 def build_track(timeline, sfx_events, path, ambience_gain=0.06):
     total = timeline["total"]
-    n = int(SR * total) + SR
+    n = int(SR * total)
     mix = np.zeros(n)
     mix[:int(SR * total)] += cabin_ambience(total)[:int(SR * total)] * ambience_gain
     starts = {c["id"]: c["start"] for c in timeline["cues"]}
+    starts["_end"] = total  # für Effekte relativ zum Videoende (Loop-Übergang)
     cache = {}
     for cue, off, name, gain in sfx_events:
         if name not in cache:
@@ -245,6 +244,9 @@ def build_track(timeline, sfx_events, path, ambience_gain=0.06):
         i = max(0, int(SR * (starts[cue] + off)))
         j = min(n, i + len(s))
         mix[i:j] += s[:j - i] * gain * 0.5
+        if i + len(s) > n:  # Überhang am Ende landet am Anfang (nahtloser Loop)
+            rest = s[j - i:]
+            mix[:len(rest)] += rest * gain * 0.5
     mix = mix[:int(SR * total)]
     mix = np.tanh(mix * 1.2) / np.tanh(1.2)  # weicher Limiter
     mix = _norm(mix, 0.89)

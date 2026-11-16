@@ -13,7 +13,7 @@ import subprocess
 from episode import CUES, PRONUNCIATIONS
 
 LEAD_IN = 0.35         # Sekunden vor dem ersten Wort (Pop auf dem ersten Bild)
-TAIL = 2.4             # Endkarte nach dem letzten Wort
+TAIL = 1.2             # nach dem letzten Wort: kurze Frage-Karte + Loop-Zoom zurück zum Anfang
 TARGET_TOTAL = 82.0    # geplante Länge ohne Voiceover (75–85 s gefordert)
 PAUSES = {"c": 0.12, "s": 0.38, "p": 0.75}
 

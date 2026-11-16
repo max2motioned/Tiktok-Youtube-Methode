@@ -2,7 +2,7 @@
   "mode": "voiceover",
   "alignment": "forced alignment (pocketsphinx, word level)",
   "voiceover_duration": 66.351,
-  "total": 69.101,
+  "total": 67.901,
   "audio_offset": 0.35,
   "matched_pauses": 0,
   "detected_pauses": 25,

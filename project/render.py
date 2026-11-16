@@ -501,7 +501,12 @@ def sc_hook(cv, t, C, s0, s1):
     z = lerp(3.2 * punch, 1.0, back) * (1 + 0.35 * push)
     fx, fy = lerp(hx, 540, back), lerp(hy, 800, back)
     fx, fy = lerp(fx, hx, push * 0.5), lerp(fy, hy, push * 0.5)
-    cv.cam(z, fx, fy, 540, lerp(800, 860, back))
+    ty = lerp(800, 860, back)
+    if t < 0:  # Loop-Übergang am Videoende: ganzes Fenster -> Nahaufnahme, endet genau auf Bild 1
+        zin = smooth(ramp(t, -LOOP_ZOOM, LOOP_ZOOM)) ** 1.6
+        z = lerp(1.0, 3.2 * punch, zin)
+        fx, fy, ty = 540, lerp(800, hy, zin), 800
+    cv.cam(z, fx, fy, 540, ty)
     front_window(cv, 540, 780, 500, 720, t, shade=0.17)
     for k in range(3):
         ph = (t * 0.9 + k / 3) % 1
@@ -509,16 +514,16 @@ def sc_hook(cv, t, C, s0, s1):
     cv.circle(hx, hy, 14, outline=AMBER, w=2.6 / max(1, z * 0.45))
     cv.reset()
     # Pfeil auf das Loch (nur in der Nahaufnahme)
-    aa = 1 - ramp(t, T["hook2"] - 0.1, 0.25)
+    aa = (1 - ramp(t, T["hook2"] - 0.1, 0.25)) * ramp(t, -0.25, 0.2)
     if aa > 0:
         k = out_back(ramp(t, 0.15, 0.4))
-        X, Y = cv_point(z, fx, fy, lerp(800, 860, back), hx, hy)
+        X, Y = cv_point(z, fx, fy, ty, hx, hy)
         cv.arrow(X, 470 + 40 * (1 - k), X, Y - 64, mix(SKY_B, AMBER, aa), 14, 40)
     # Passagier gleitet von links ins Bild
     pk = out_cubic(ramp(t, T["hook2"] + 0.35, 0.6))
     if pk > 0:
         passenger(cv, lerp(-260, 215, pk) - push * 40, 1020 + push * 30)
-    headline(cv, "EVERY PLANE WINDOW HAS THIS", t, -1, T["hook2"] - 0.05, y=400, size=58)
+    headline(cv, "EVERY PLANE WINDOW HAS THIS", t, -0.35, T["hook2"] - 0.05, y=400, size=58)
     headline(cv, "NEVER NOTICED?", t, T["hook3"] - 0.05, s1 + 1, y=400, fg=AMBER, size=60)
 
 
@@ -814,8 +819,11 @@ def endcard_sprite():
 def sc_outro(cv, t, C, s0, s1):
     cv.img.paste(bg_wall())
     T = C.T
-    ek = smooth(ramp(t, T["end3"] - 0.1, 0.6))
-    hx, hy = front_window(cv, 540, 760 - 60 * ek, 380, 540, t, shade=0.12)
+    ek = smooth(ramp(t, T["end3"] - 0.15, 0.35))
+    out = smooth(ramp(t, C.total - LOOP_ZOOM - 0.3, 0.3))      # Karte fliegt raus, Loop beginnt
+    gk = smooth(ramp(t, C.total - LOOP_ZOOM - 0.45, 0.45))     # Fenster -> Hook-Geometrie
+    hx, hy = front_window(cv, 540, lerp(760 - 60 * ek, 780, gk), lerp(380, 500, gk), lerp(540, 720, gk), t,
+                          shade=lerp(0.12, 0.17, gk))
     a = ramp(t, T["end1"], 0.3)
     for k in range(3):
         ph = ((t - T["end1"]) * 0.9 + k / 3) % 1
@@ -832,12 +840,13 @@ def sc_outro(cv, t, C, s0, s1):
             drop_icon(cv, cx, y - 30, 52 * k, P_COLD)
             cv.line([(cx - 44 * k, y - 76 * k), (cx + 44 * k, y + 16 * k)], CORAL, 10 * k)
         cv.put(txt(word, 40, WHITE, "black"), cx, y + 72 * k, 1, k)
-    if ek > 0:
-        y = lerp(1500, 760, out_cubic(ek))
-        bob = math.sin(max(0, t - T["end4"]) * 5) * 4 * ramp(t, T["end4"], 0.3)
-        cv.put(endcard_sprite(), 540, y + bob, min(1, ek * 1.5))
+    if ek > 0 and out < 1:
+        y = lerp(1500, 760, out_cubic(ek)) - 700 * out ** 2
+        bob = math.sin(max(0, t - T["end4"]) * 6) * 4 * ramp(t, T["end4"], 0.2)
+        cv.put(endcard_sprite(), 540, y + bob, min(1, ek * 1.5) * (1 - out), 1 + 0.15 * out)
 
 
+LOOP_ZOOM = 0.7   # Sekunden am Ende: Zoom ins Loch, mündet nahtlos in Bild 1
 SCENE_FUNCS = {"hook": sc_hook, "purpose": sc_purpose, "assume": sc_assume, "layers": sc_layers,
                "pressure": sc_pressure, "hole": sc_hole, "fog": sc_fog, "outro": sc_outro}
 XFADE = 0.32
@@ -951,11 +960,12 @@ def render_frame(i):
         pname, p0, p1 = bounds[idx - 1]
         prev = draw_scene(pname, t, p0, p1)
         frame = Image.blend(prev, frame, smooth((t - s0) / XFADE))
+    total = G["tl"]["total"]
+    if t >= total - LOOP_ZOOM:
+        # Endlos-Loop: Hook-Szene "vor" Sekunde 0 – das letzte Bild geht direkt in Bild 1 über
+        hook = draw_scene("hook", t - total, -LOOP_ZOOM, bounds[1][1])
+        frame = Image.blend(frame, hook, smooth(ramp(t, total - LOOP_ZOOM, 0.22)))
     draw_caption(frame, G["tl"], t)
-    # kein Einblenden: Bild 1 ist sofort voll sichtbar (Hook); nur am Ende sanft ausblenden
-    fade = 1 - ramp(t, G["tl"]["total"] - 0.4, 0.4)
-    if fade < 1:
-        frame = Image.blend(Image.new("RGB", frame.size, (0, 0, 0)), frame, fade)
     return frame.tobytes()
 
 
@@ -998,7 +1008,7 @@ def mux_voiceover(tl, video, audio_wav, vo, path, target_lufs=-14.0):
     subprocess.run(["ffmpeg", "-y", "-hide_banner", "-loglevel", "error", "-i", audio_wav, "-i", vo,
                     "-filter_complex",
                     f"[1:a]aresample=48000,aformat=channel_layouts=stereo,adelay={off_ms}|{off_ms}[vo];"
-                    f"[0:a]volume=0.40[fx];[vo][fx]amix=inputs=2:duration=longest:normalize=0[a]",
+                    f"[0:a]volume=0.26[fx];[vo][fx]amix=inputs=2:duration=longest:normalize=0[a]",
                     "-map", "[a]", "-t", f"{tl['total']:.3f}", "-c:a", "pcm_s16le", mix_wav], check=True)
     lufs = measure_lufs(mix_wav)
     gain = 0.0 if lufs is None else max(-6.0, min(12.0, target_lufs - lufs))

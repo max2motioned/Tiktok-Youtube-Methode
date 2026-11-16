@@ -85,7 +85,8 @@ SCENES = [
      "'JOB 2', 'NO FOG · NO FROST'"),
     ("outro", "end1", "Payoff + question",
      "Window front view with the hole, two result icons, then a short question card (no channel name, no follow ask).",
-     "Icons pop in left/right, question card slides up, comment bubble bounces.",
+     "Icons pop in left/right, question card snaps up, then flies out while the camera zooms into the hole "
+     "and lands exactly on frame 1 (seamless loop).",
      "'SPARE WINDOW' + 'DEFOGGER', 'WHAT SHOULD WE UNPACK NEXT?'"),
 ]
 
@@ -136,7 +137,8 @@ SFX = [
     ("end2", 0.10, "pop", 0.55),
     ("end2", 1.00, "pop_high", 0.55),
     ("end3", 0.00, "whoosh_in", 0.40),
-    ("end4", 0.40, "outro_chime", 0.55),
+    ("end4", 0.20, "outro_chime", 0.45),
+    ("_end", -0.72, "whoosh_in", 0.50),   # Loop: Zoom zurück ins Loch, Pop am Anfang schließt ihn ab
 ]
 
 # Aussprache für Wörter, die das pocketsphinx-Wörterbuch nicht kennt (CMU-Phoneme), für die Wort-Ausrichtung
