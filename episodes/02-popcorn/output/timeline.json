@@ -1,0 +1,260 @@
+{
+  "mode": "planned",
+  "total": 82.0,
+  "speech_rate_wpm": 193.3,
+  "audio_offset": 0.0,
+  "cues": [
+    {
+      "id": "hook1",
+      "text": "Every popcorn kernel is a *tiny pressure cooker.*",
+      "start": 0.35,
+      "end": 2.834
+    },
+    {
+      "id": "hook2",
+      "text": "And every single one",
+      "start": 3.214,
+      "end": 4.456
+    },
+    {
+      "id": "hook3",
+      "text": "is counting down to an *explosion.*",
+      "start": 4.576,
+      "end": 6.438
+    },
+    {
+      "id": "ass1",
+      "text": "Most people think heat just makes",
+      "start": 7.188,
+      "end": 9.051
+    },
+    {
+      "id": "ass2",
+      "text": "the corn *burst open.*",
+      "start": 9.171,
+      "end": 10.413
+    },
+    {
+      "id": "ass3",
+      "text": "But the real trick is *hiding inside.*",
+      "start": 10.793,
+      "end": 12.966
+    },
+    {
+      "id": "an1",
+      "text": "Each kernel holds a *tiny drop of water,*",
+      "start": 13.716,
+      "end": 16.2
+    },
+    {
+      "id": "an2",
+      "text": "about *fourteen percent* of its weight,",
+      "start": 16.32,
+      "end": 18.183
+    },
+    {
+      "id": "an3",
+      "text": "packed into *soft starch.*",
+      "start": 18.303,
+      "end": 19.544
+    },
+    {
+      "id": "an4",
+      "text": "Around it sits a *hard shell*",
+      "start": 19.924,
+      "end": 21.787
+    },
+    {
+      "id": "an5",
+      "text": "that barely lets anything out.",
+      "start": 21.907,
+      "end": 23.459
+    },
+    {
+      "id": "pr1",
+      "text": "Heat it up,",
+      "start": 24.209,
+      "end": 25.141
+    },
+    {
+      "id": "pr2",
+      "text": "and that water turns into *steam.*",
+      "start": 25.261,
+      "end": 27.124
+    },
+    {
+      "id": "pr3",
+      "text": "The shell *traps it.*",
+      "start": 27.504,
+      "end": 28.745
+    },
+    {
+      "id": "pr4",
+      "text": "Pressure climbs to nearly *ten times*",
+      "start": 29.125,
+      "end": 30.988
+    },
+    {
+      "id": "pr5",
+      "text": "normal air pressure,",
+      "start": 31.108,
+      "end": 32.04
+    },
+    {
+      "id": "pr6",
+      "text": "while the starch inside softens",
+      "start": 32.16,
+      "end": 33.712
+    },
+    {
+      "id": "pr7",
+      "text": "into a *hot gel.*",
+      "start": 33.832,
+      "end": 35.074
+    },
+    {
+      "id": "bu1",
+      "text": "At around *one hundred eighty degrees Celsius,*",
+      "start": 35.824,
+      "end": 37.997
+    },
+    {
+      "id": "bu2",
+      "text": "the shell finally *gives up.*",
+      "start": 38.117,
+      "end": 39.669
+    },
+    {
+      "id": "fo1",
+      "text": "In a split second,",
+      "start": 40.419,
+      "end": 41.661
+    },
+    {
+      "id": "fo2",
+      "text": "the steam *rushes out*",
+      "start": 41.781,
+      "end": 43.023
+    },
+    {
+      "id": "fo3",
+      "text": "and puffs the gel into a *foam,*",
+      "start": 43.143,
+      "end": 45.316
+    },
+    {
+      "id": "fo4",
+      "text": "up to *forty times bigger.*",
+      "start": 45.436,
+      "end": 46.989
+    },
+    {
+      "id": "fo5",
+      "text": "It cools almost instantly",
+      "start": 47.369,
+      "end": 48.61
+    },
+    {
+      "id": "fo6",
+      "text": "and sets into that *crunchy white cloud.*",
+      "start": 48.73,
+      "end": 50.904
+    },
+    {
+      "id": "so1",
+      "text": "And the *pop* you hear?",
+      "start": 51.654,
+      "end": 53.206
+    },
+    {
+      "id": "so2",
+      "text": "Scientists filmed it at",
+      "start": 53.586,
+      "end": 54.828
+    },
+    {
+      "id": "so3",
+      "text": "*thousands of frames per second.*",
+      "start": 54.948,
+      "end": 56.5
+    },
+    {
+      "id": "so4",
+      "text": "The sound comes from the *steam escaping,*",
+      "start": 56.88,
+      "end": 59.053
+    },
+    {
+      "id": "so5",
+      "text": "not from the *shell cracking.*",
+      "start": 59.173,
+      "end": 60.726
+    },
+    {
+      "id": "ju1",
+      "text": "Even the jump is wild:",
+      "start": 61.106,
+      "end": 62.658
+    },
+    {
+      "id": "ju2",
+      "text": "a little *leg of starch*",
+      "start": 62.778,
+      "end": 64.33
+    },
+    {
+      "id": "ju3",
+      "text": "kicks the kernel *into the air.*",
+      "start": 64.45,
+      "end": 66.313
+    },
+    {
+      "id": "du1",
+      "text": "The kernels that *never pop?*",
+      "start": 67.063,
+      "end": 68.615
+    },
+    {
+      "id": "du2",
+      "text": "Usually a *damaged or dried-out shell.*",
+      "start": 68.995,
+      "end": 70.858
+    },
+    {
+      "id": "du3",
+      "text": "The steam *leaks away,*",
+      "start": 71.238,
+      "end": 72.48
+    },
+    {
+      "id": "du4",
+      "text": "so the pressure *never builds.*",
+      "start": 72.6,
+      "end": 74.152
+    },
+    {
+      "id": "end1",
+      "text": "One drop of water, one tough shell,",
+      "start": 74.902,
+      "end": 77.075
+    },
+    {
+      "id": "end2",
+      "text": "one *tiny explosion.*",
+      "start": 77.195,
+      "end": 78.127
+    },
+    {
+      "id": "end3",
+      "text": "What everyday thing",
+      "start": 78.507,
+      "end": 79.438
+    },
+    {
+      "id": "end4",
+      "text": "should we *unpack next?*",
+      "start": 79.558,
+      "end": 80.8
+    }
+  ]
+}

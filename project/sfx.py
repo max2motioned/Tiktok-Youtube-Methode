@@ -208,7 +208,70 @@ def outro_chime():
     return _norm(out, 0.8)
 
 
+def sizzle(d=1.4):
+    x = _bandnoise(d, 2500, 9000)
+    n = len(x)
+    crack = (RNG.uniform(0, 1, n) > 0.9993) * RNG.uniform(0.4, 1.0, n)
+    crack = np.convolve(crack, np.exp(-np.arange(200) / 25), mode="same")
+    p = np.linspace(0, 1, n)
+    return _norm((x * 0.5 + crack * RNG.uniform(-1, 1, n)) * np.sin(np.pi * p) ** 0.5, 0.6)
+
+
+def flame(d=1.2):
+    x = _lowpass(_noise(d), 700) - _lowpass(_noise(d), 90)
+    t = _t(d)
+    x *= 0.7 + 0.3 * np.sin(2 * np.pi * 7 * t)
+    return _norm(x * np.sin(np.pi * t / d) ** 0.6, 0.6)
+
+
+def drip():
+    t = _t(0.25)
+    f = 900 + 1400 * (1 - np.exp(-t * 30))
+    return _norm(np.sin(2 * np.pi * np.cumsum(f) / SR) * np.exp(-t * 22), 0.7)
+
+
+def crackle(d=0.8):
+    n = int(SR * d)
+    out = np.zeros(n)
+    for i in range(14):
+        s = int(RNG.uniform(0, n - 3000))
+        c = tick() * RNG.uniform(0.3, 1.0)
+        out[s:s + len(c)] += c
+    return _norm(out, 0.8)
+
+
+def burst():
+    out = np.zeros(int(SR * 0.9))
+    th = thud()
+    out[:len(th)] += th * 0.8
+    p = pop(1100, 180, 0.14)
+    out[:len(p)] += p
+    hs = air_hiss(0.6)
+    out[int(SR * 0.02):int(SR * 0.02) + len(hs)] += hs * 0.5
+    return _norm(out, 1.0)
+
+
+def projector(d=1.6):
+    t = _t(d)
+    clicks = np.zeros(len(t))
+    step = int(SR / 24)
+    for i in range(0, len(t) - 400, step):
+        c = tick()[:400] * 0.5
+        clicks[i:i + len(c)] += c
+    hum = 0.15 * np.sin(2 * np.pi * 120 * t)
+    return _norm((clicks + hum) * np.sin(np.pi * t / d) ** 0.3, 0.6)
+
+
+def spring():
+    t = _t(0.45)
+    f = 220 + 900 * t / 0.45
+    x = np.sin(2 * np.pi * np.cumsum(f) / SR + 3 * np.sin(2 * np.pi * 18 * t))
+    return _norm(x * np.exp(-t * 4) * _env(len(t), 0.005, 0.08), 0.7)
+
+
 SOUNDS = {
+    "sizzle": sizzle, "flame": flame, "drip": drip, "crackle": crackle, "burst": burst,
+    "projector": projector, "spring": spring,
     "cabin_chime": cabin_chime, "whoosh": whoosh, "whoosh_in": whoosh_in, "pop": pop,
     "pop_high": lambda: pop(900, 300, 0.1), "sparkle": sparkle, "buzz": buzz, "stamp": stamp,
     "thud": thud, "split": split, "tick": tick, "tap": tap, "shimmer": shimmer, "rise": rise,
