@@ -386,11 +386,14 @@ def endcard_sprite():
     return im
 
 
-LOOP_ZOOM = 0.7   # Sekunden am Ende: Zoom ins Loch, mündet nahtlos in Bild 1
-XFADE = 0.32
+LOOP_ZOOM = 0.7   # Sekunden am Ende: Zoom zurück auf Bild 1 (nahtloser Loop)
+XFADE = 0.36      # Dauer der Szenenübergänge
+KB_ZOOM = 0.04    # langsamer Kamera-Zoom pro Szene ("Ken Burns")
+IMPACT_SFX = {"pop", "stamp", "thud", "burst", "split", "push", "spring"}
+WHOOSHES = {"whoosh", "whoosh_in", "split", "rise", "wipe"}
 
 
-# ---------------------------------------------------------------- Untertitel (1x)
+# ---------------------------------------------------------------- Untertitel (1x, Karaoke)
 def parse_rich(text):
     out, hi = [], False
     for word in text.split():
@@ -404,34 +407,45 @@ def parse_rich(text):
     return out
 
 
-@lru_cache(maxsize=256)
-def caption_img(text):
+DIM = (122, 136, 160)
+
+
+@lru_cache(maxsize=4096)
+def caption_img(text, active=-1):
+    """active = Index des gerade gesprochenen Worts (-1 = alle gesprochen)."""
     f = font("black", 58)
     words = parse_rich(text)
-    space = f.getlength(" ")
-    maxw = 840
+    space = f.getlength(" ") + 12   # Platz für die Karaoke-Markierung
+    maxw = 860
     lines, cur, cw = [], [], 0
-    for wd, hi in words:
+    for i, (wd, hi) in enumerate(words):
         ww = f.getlength(wd)
         if cur and cw + space + ww > maxw:
             lines.append(cur)
             cur, cw = [], 0
         cw = cw + (space if cur else 0) + ww
-        cur.append((wd, hi, ww))
+        cur.append((i, wd, hi, ww))
     lines.append(cur)
     if len(lines) == 2 and len(lines[1]) == 1 and len(lines[0]) > 2:  # Einzelwort vermeiden
         lines[1].insert(0, lines[0].pop())
-    lh = 72
-    widths = [sum(w for _, _, w in ln) + space * (len(ln) - 1) for ln in lines]
-    bw, bh = int(max(widths)) + 64, lh * len(lines) + 34
+    lh = 74
+    widths = [sum(w for *_, w in ln) + space * (len(ln) - 1) for ln in lines]
+    bw, bh = int(max(widths)) + 72, lh * len(lines) + 36
     im = Image.new("RGBA", (bw, bh), (0, 0, 0, 0))
     d = ImageDraw.Draw(im)
-    d.rounded_rectangle([0, 0, bw - 1, bh - 1], radius=26, fill=(8, 14, 28, 190))
-    y = 14
+    d.rounded_rectangle([0, 0, bw - 1, bh - 1], radius=28, fill=(8, 14, 28, 196))
+    y = 15
     for ln, lw in zip(lines, widths):
         x = (bw - lw) / 2
-        for wd, hi, ww in ln:
-            d.text((x, y), wd, font=f, fill=AMBER if hi else WHITE)
+        for i, wd, hi, ww in ln:
+            if i == active:
+                d.rounded_rectangle([x - 9, y + 3, x + ww + 9, y + 70], radius=16, fill=AMBER)
+                col = NAVY
+            elif active == -1 or i < active:
+                col = AMBER if hi else WHITE
+            else:
+                col = DIM
+            d.text((x, y), wd, font=f, fill=col)
             x += ww + space
         y += lh
     return im
@@ -448,7 +462,13 @@ def draw_caption(frame, tl, t):
             break
     if not cur:
         return
-    im = caption_img(cur["text"])
+    active = 0
+    for j, (a, _) in enumerate(cur.get("words", [])):
+        if a <= t + 0.02:
+            active = j
+    if t > cur["end"] + 0.05:
+        active = -1
+    im = caption_img(cur["text"], active)
     k = out_back(ramp(t, cur["start"] - 0.03, 0.14), 1.2)
     sc = 0.9 + 0.1 * k
     if sc < 0.999:
@@ -459,6 +479,105 @@ def draw_caption(frame, tl, t):
         m = m.point(lambda v: int(v * a))
     cy = 1350
     frame.paste(im, (int(540 - im.width / 2), int(cy - im.height / 2)), m)
+
+
+# ---------------------------------------------------------------- Effekte (1x)
+def affine(im, s=1.0, dx=0.0, dy=0.0, cx=540, cy=900):
+    """Skaliert um (cx,cy) und verschiebt; s >= 1 hält die Ränder gefüllt."""
+    if abs(s - 1) < 1e-4 and abs(dx) < 0.05 and abs(dy) < 0.05:
+        return im
+    a = 1 / s
+    return im.transform(im.size, Image.AFFINE, (a, 0, cx - cx * a - dx * a, 0, a, cy - cy * a - dy * a),
+                        Image.BILINEAR)
+
+
+def vblur(im, amount):
+    """Vertikale Bewegungsunschärfe (schnell, über Stauchen/Strecken)."""
+    f = 1 + amount
+    if f < 1.3:
+        return im
+    return im.resize((W, max(8, int(H / f))), Image.BILINEAR).resize((W, H), Image.BILINEAR)
+
+
+def transition(prev, cur, k, kind):
+    e = smooth(k)
+    if kind == 0:   # Zoom-Durchflug
+        a = affine(prev, 1 + 0.35 * e * e)
+        b = affine(cur, 1 + 0.16 * (1 - e) ** 2)
+    else:           # Wisch nach oben mit Bewegungsunschärfe
+        D = 0.16 * H
+        bl = 12 * math.sin(math.pi * k)
+        a = vblur(affine(prev, 1 + 2.1 * D * e / H, 0, -D * e), bl)
+        b = vblur(affine(cur, 1 + 2.1 * D * (1 - e) / H, 0, D * (1 - e)), bl)
+    return Image.blend(a, b, e)
+
+
+@lru_cache(maxsize=None)
+def vignette_mask():
+    yy, xx = np.mgrid[0:H, 0:W]
+    d = np.sqrt(((xx - W / 2) / (W * 0.62)) ** 2 + ((yy - H * 0.47) / (H * 0.6)) ** 2)
+    v = np.clip((d - 0.55) / 0.6, 0, 1) ** 1.6 * 95
+    return Image.fromarray(v.astype(np.uint8), "L")
+
+
+@lru_cache(maxsize=None)
+def black_frame():
+    return Image.new("RGB", (W, H), (0, 0, 0))
+
+
+@lru_cache(maxsize=64)
+def dot_mask(r, a):
+    n = 2 * r + 1
+    yy, xx = np.mgrid[0:n, 0:n]
+    d = np.hypot(xx - r, yy - r) / max(r, 1)
+    v = np.clip(1 - d, 0, 1) ** 1.5 * a
+    return Image.fromarray(v.astype(np.uint8), "L")
+
+
+@lru_cache(maxsize=64)
+def white_patch(n):
+    return Image.new("RGB", (n, n), (255, 250, 240))
+
+
+def make_specks(total, n=28, seed=5):
+    r = np.random.default_rng(seed)
+    out = []
+    for _ in range(n):
+        speed = r.uniform(18, 46)
+        cyc = max(1, int(round(total * speed / H)))          # ganze Umläufe -> nahtloser Loop
+        out.append((r.uniform(40, W - 40), r.uniform(0, H), int(r.uniform(3, 8)), int(r.uniform(30, 75)),
+                    cyc, int(r.integers(1, 4)), r.uniform(0, 6.28)))
+    return out
+
+
+def draw_specks(frame, t, total):
+    for x0, y0, rad, a, cyc, wob, ph in G["specks"]:
+        q = t / total
+        y = (y0 - q * cyc * (H + 40)) % (H + 40) - 20
+        x = x0 + 18 * math.sin(2 * math.pi * q * wob * 3 + ph)
+        n = 2 * rad + 1
+        frame.paste(white_patch(n), (int(x - rad), int(y - rad)), dot_mask(rad, a))
+
+
+def impact_times(tl):
+    starts = {c["id"]: c["start"] for c in tl["cues"]}
+    starts["_end"] = tl["total"]
+    ts = sorted(starts[c] + off for c, off, name, _ in EP.SFX if name in IMPACT_SFX and c in starts)
+    return [x for x in ts if 0.3 < x < tl["total"] - LOOP_ZOOM - 0.15]
+
+
+def auto_sfx(tl):
+    """Zusätzliche Effekte: Whoosh bei jedem Szenenwechsel, tiefer Bass-Hit unter jedem Impact."""
+    starts = {c["id"]: c["start"] for c in tl["cues"]}
+    starts["_end"] = tl["total"]
+    ev = [(starts[c] + off, name) for c, off, name, _ in EP.SFX if c in starts]
+    extra = []
+    for _, s0, _ in scene_bounds(tl)[1:]:
+        if not any(name in WHOOSHES and abs(tt - s0) < 0.4 for tt, name in ev):
+            extra.append(("_abs", s0 - 0.12, "whoosh", 0.30))
+    for tt in impact_times(tl):
+        extra.append(("_abs", tt, "sub", 0.45))
+    return extra
 
 
 # ---------------------------------------------------------------- Frame-Rendering
@@ -477,18 +596,23 @@ def init_worker(tl):
     G["tl"] = tl
     G["ctx"] = Ctx(tl)
     G["bounds"] = scene_bounds(tl)
+    G["impacts"] = impact_times(tl)
+    G["specks"] = make_specks(tl["total"])
 
 
 def draw_scene(name, t, s0, s1):
     img = Image.new("RGB", (W2, H2))
     cv = Cv(img)
     G["funcs"][name](cv, t, G["ctx"], s0, s1)
-    return img.reduce(S)
+    frame = img.reduce(S)
+    p = clamp((t - s0) / max(0.5, min(s1, G["tl"]["total"]) - s0))
+    return affine(frame, 1 + KB_ZOOM * smooth(p), 0, -10 * p)
 
 
 def render_frame(i):
     t = i / FPS
     bounds = G["bounds"]
+    total = G["tl"]["total"]
     idx = 0
     for k, (_, s0, s1) in enumerate(bounds):
         if s0 <= t:
@@ -498,13 +622,25 @@ def render_frame(i):
     if idx > 0 and t < s0 + XFADE:
         pname, p0, p1 = bounds[idx - 1]
         prev = draw_scene(pname, t, p0, p1)
-        frame = Image.blend(prev, frame, smooth((t - s0) / XFADE))
-    total = G["tl"]["total"]
+        frame = transition(prev, frame, (t - s0) / XFADE, idx % 2)
     if t >= total - LOOP_ZOOM:
-        # Endlos-Loop: Hook-Szene "vor" Sekunde 0 – das letzte Bild geht direkt in Bild 1 über
+        # Endlos-Loop: erste Szene "vor" Sekunde 0 – das letzte Bild geht direkt in Bild 1 über
         first = bounds[0][0]   # erste Szene muss t < 0 als "Zoom zurück auf Bild 1" zeichnen
-        hook = draw_scene(first, t - total, -LOOP_ZOOM, bounds[1][1])
+        hook = draw_scene(first, t - total, 0.0, bounds[1][1])
         frame = Image.blend(frame, hook, smooth(ramp(t, total - LOOP_ZOOM, 0.22)))
+    # Impact-Punch: kurzer Zoom-Ruck + Wackler bei Pops/Explosionen
+    ps, dx, dy = 1.0, 0.0, 0.0
+    for ti in G["impacts"]:
+        dt = t - ti
+        if 0 <= dt < 0.6:
+            e = math.exp(-dt * 9)
+            ps += 0.035 * e
+            dx += 9 * e * math.sin(dt * 75 + ti)
+            dy += 7 * e * math.cos(dt * 61 + ti)
+    if ps > 1.0005:
+        frame = affine(frame, ps, dx, dy)
+    draw_specks(frame, t, total)
+    frame.paste(black_frame(), (0, 0), vignette_mask())
     draw_caption(frame, G["tl"], t)
     return frame.tobytes()
 
@@ -587,7 +723,7 @@ def main(args):
     make_docs.write_scene_plan(tl, scene_bounds(tl), os.path.join(OUT, "scene_plan.md"))
 
     wav = os.path.join(OUT, "sfx_track.wav")
-    sfx.build_track(tl, EP.SFX, wav)
+    sfx.build_track(tl, list(EP.SFX) + auto_sfx(tl), wav)
     print("SFX-Spur fertig")
     encode(tl, os.path.join(OUT, "animation_preview.mp4"), wav, args.workers)
     print("animation_preview.mp4 fertig")

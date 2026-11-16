@@ -269,7 +269,16 @@ def spring():
     return _norm(x * np.exp(-t * 4) * _env(len(t), 0.005, 0.08), 0.7)
 
 
+def sub():
+    """Tiefer, weicher Bass-Hit unter Impacts."""
+    t = _t(0.5)
+    f = 42 + 30 * np.exp(-t * 14)
+    x = np.sin(2 * np.pi * np.cumsum(f) / SR) * np.exp(-t * 7)
+    return _norm(x * _env(len(t), 0.004, 0.1), 0.9)
+
+
 SOUNDS = {
+    "sub": sub,
     "sizzle": sizzle, "flame": flame, "drip": drip, "crackle": crackle, "burst": burst,
     "projector": projector, "spring": spring,
     "cabin_chime": cabin_chime, "whoosh": whoosh, "whoosh_in": whoosh_in, "pop": pop,
@@ -299,6 +308,7 @@ def build_track(timeline, sfx_events, path, ambience_gain=0.06):
     mix[:int(SR * total)] += cabin_ambience(total)[:int(SR * total)] * ambience_gain
     starts = {c["id"]: c["start"] for c in timeline["cues"]}
     starts["_end"] = total  # für Effekte relativ zum Videoende (Loop-Übergang)
+    starts["_abs"] = 0.0    # absolute Zeitangaben (automatische Effekte aus der Engine)
     cache = {}
     for cue, off, name, gain in sfx_events:
         if name not in cache:

@@ -104,7 +104,7 @@ Safe zones: key text & captions stay between y ≈ 220 px and y ≈ 1430 px and 
 
 ## Transitions
 
-0.32 s crossfade between all scenes; no fade-in or fade-out. The last 0.7 s zoom from the window into the hole and land exactly on frame 1, so the video loops seamlessly (audio bed and the closing whoosh also wrap around).
+Transitions alternate between a zoom-through and an upward whip with motion blur (0.36 s). Global effects: slow camera push-in per scene, impact punches (zoom jolt + shake + sub-bass hit) on every pop/stamp/burst, soft floating light specks, light vignette, karaoke captions (current word highlighted), auto whoosh on scene changes. No fade-in/out: the last 0.7 s zoom back onto frame 1 for a seamless loop.
 
 ## Caption cues
 

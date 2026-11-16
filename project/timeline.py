@@ -38,6 +38,8 @@ def planned():
         d = words(text) * sec_per_word
         cues.append({"id": cid, "text": text, "start": round(t, 3), "end": round(t + d, 3)})
         t += d + PAUSES[p]
+    for c in cues:
+        c["words"] = even_word_times(c)
     total = cues[-1]["end"] + TAIL
     return {"mode": "planned", "total": round(total, 3), "speech_rate_wpm": round(60 / sec_per_word, 1),
             "audio_offset": 0.0, "cues": cues}
@@ -147,8 +149,35 @@ def forced_align(vo_path):
         return None
     out, k = [], 0
     for ws in per_cue:
-        out.append((segs[k][0], segs[k + len(ws) - 1][1]))
+        out.append(segs[k:k + len(ws)])
         k += len(ws)
+    return out
+
+
+def caption_word_times(text, token_times):
+    """Erkannte Token-Zeiten auf die sichtbaren Untertitel-Wörter (Leerzeichen-getrennt) abbilden."""
+    res, k, last = [], 0, token_times[0][0]
+    for wd in clean(text).split():
+        n = len(norm_words(wd))
+        if n == 0:
+            res.append([round(last, 3), round(last, 3)])
+            continue
+        a, b = token_times[k][0], token_times[k + n - 1][1]
+        res.append([round(a, 3), round(b, 3)])
+        k += n
+        last = b
+    return res
+
+
+def even_word_times(cue):
+    """Wörter gleichmäßig (nach Zeichenzahl) über die Cue-Dauer verteilen."""
+    ws = clean(cue["text"]).split()
+    lens = [len(w) + 2 for w in ws]
+    tot = sum(lens)
+    t, d, out = cue["start"], cue["end"] - cue["start"], []
+    for n in lens:
+        out.append([round(t, 3), round(t + d * n / tot, 3)])
+        t += d * n / tot
     return out
 
 
@@ -162,8 +191,9 @@ def aligned(vo_path):
     # 1. Wahl: Wort-Ausrichtung; Rückfall: Sprechpausen den Cue-Grenzen zuordnen
     words_al = forced_align(vo_path)
     if words_al:
-        cues = [{"id": cid, "text": text, "start": round(a, 3), "end": round(b, 3)}
-                for (cid, text, _), (a, b) in zip(CUES, words_al)]
+        cues = [{"id": cid, "text": text, "start": round(tt[0][0], 3), "end": round(tt[-1][1], 3),
+                 "words": caption_word_times(text, tt)}
+                for (cid, text, _), tt in zip(CUES, words_al)]
         method, bounds = "forced alignment (pocketsphinx, word level)", {}
     else:
         method = "pause matching (ffmpeg silencedetect)"
@@ -173,6 +203,10 @@ def aligned(vo_path):
     for c in cues:
         c["start"] = round(c["start"] + offset, 3)
         c["end"] = round(c["end"] + offset, 3)
+        if "words" in c:
+            c["words"] = [[round(a + offset, 3), round(b + offset, 3)] for a, b in c["words"]]
+        else:
+            c["words"] = even_word_times(c)
     total = max(dur + offset, cues[-1]["end"]) + TAIL
     return {"mode": "voiceover", "alignment": method, "voiceover_duration": round(dur, 3), "total": round(total, 3),
             "audio_offset": offset, "matched_pauses": len(bounds), "detected_pauses": len(inner),

@@ -393,7 +393,7 @@ def sc_foam(cv, t, C, s0, s1):
     cv.img.paste(bg_navy())
     T = C.T
     cx, cy = 540, 820
-    grow = out_back(ramp(t, T["fo1"] - 0.1, max(0.8, T["fo4"] - T["fo1"] + 0.3)), 1.2)
+    grow = 0.25 + 0.75 * out_back(ramp(t, s0, max(0.8, T["fo4"] - s0)), 1.2)
     gloss = 1 - smooth(ramp(t, T["fo5"], 1.0))
     # Dampfstrahlen
     ja = ramp(t, T["fo2"] - 0.1, 0.2) * (1 - ramp(t, T["fo3"] + 0.6, 0.4))
